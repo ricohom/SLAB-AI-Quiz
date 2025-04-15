@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV-Quizshow</title>
+  <!-- Particles.js -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <!-- Anime.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <!-- AOS CSS und JS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <!-- Rellax.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/rellax/1.12.1/rellax.min.js"></script>
+  <!-- Eigene CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Partikel-Hintergrund -->
+  <div id="particles-js"></div>
+  
+  <!-- Hauptcontainer -->
+  <div class="container">
+    <!-- Header -->
+    <header class="header" data-aos="fade-down">
+      <h1 class="gradient-text">Willkommen zur TV-Quizshow</h1>
+      <p class="slogan">Teste Dein Wissen live und interaktiv!</p>
+    </header>
+    
+    <!-- Hauptbereich mit zwei Spalten -->
+    <main class="main-content">
+      <!-- Moderatorbereich -->
+      <section class="moderator" data-aos="fade-right">
+        <img src="assets/mod.png" alt="Moderator" class="moderator-img">
+      </section>
+
+      <!-- Quizinhalt-Bereich -->
+      <section class="quiz-content" data-aos="fade-up">
+        <div class="question">
+          <h2>Frage: Welche Hauptstadt liegt an der Spree?</h2>
+        </div>
+        <div class="feedback">
+          <p>Dein Ergebnis erscheint hier...</p>
+        </div>
+        <!-- Eingabebereich für Buttons / Texteingabe -->
+        <div class="input-section">
+          <button class="answer-btn">Antwort 1</button>
+          <button class="answer-btn">Antwort 2</button>
+          <button class="answer-btn">Antwort 3</button>
+          <button class="answer-btn">Antwort 4</button>
+        </div>
+      </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer" data-aos="fade-up">
+      <p>&copy; 2025 TV-Quizshow. Alle Rechte vorbehalten.</p>
+    </footer>
+  </div>
+
+  <!-- Initialisierungsskripte -->
+  <script>
+    // Particles.js: Konfiguration mit detect_on "window" sorgt dafür, dass der repulse-Effekt überall greift.
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 20,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "shape": {
+          "type": "polygon",
+          "polygon": {
+            "nb_sides": 6
+          }
+        },
+        "color": {
+          "value": "#ffffff"
+        },
+        "opacity": {
+          "value": 0.5,
+          "random": true
+        },
+        "size": {
+          "value": 5,
+          "random": true
+        },
+        "move": {
+          "enable": true,
+          "speed": 3,
+          "direction": "none",
+          "random": true,
+          "attract": {
+            "enable": false
+          }
+        }
+      },
+      "interactivity": {
+        "detect_on": "window",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "repulse"
+          },
+          "onclick": {
+            "enable": false
+          }
+        },
+        "modes": {
+          "repulse": {
+            "distance": 150,
+            "duration": 0.4
+          }
+        }
+      },
+      "retina_detect": true
+    });
+
+    // Initialisierung von AOS (Scroll-Animationen)
+    AOS.init({
+      duration: 1200,
+    });
+
+    // Anime.js-Animation für den Headergradienten Text
+    anime({
+      targets: '.gradient-text',
+      translateY: [-50, 0],
+      opacity: [0, 1],
+      easing: 'easeOutExpo',
+      duration: 1500,
+      delay: 500
+    });
+
+    // Rellax.js: Parallax-Effekt auf dem Moderatorbild
+    var rellax = new Rellax('.moderator-img');
+
+
+    /* ===== Cursor-Trail-Effekt mit Kreisen ===== */
+    // Erzeuge 20 Kreis-Elemente
+    const numCircles = 20;
+    for (let i = 0; i < numCircles; i++) {
+      const div = document.createElement("div");
+      div.className = "circle";
+      document.body.appendChild(div);
+    }
+    
+    const coords = { x: 0, y: 0 };
+    const circles = document.querySelectorAll(".circle");
+
+    // Farbpalette, interpoliert von #1abc9c bis #3498db:
+    const colors = [
+      "#1abc9c",
+      "#1eb7a5",
+      "#22b2ae",
+      "#26adb7",
+      "#2aa8c0",
+      "#2ea3c9",
+      "#329ed2",
+      "#3498db"
+    ];
+
+    circles.forEach(function(circle, index) {
+      circle.x = 0;
+      circle.y = 0;
+      // Zuweisung der Farbe aus der Palette
+      circle.style.backgroundColor = colors[index % colors.length];
+    });
+
+    window.addEventListener("mousemove", function(e){
+      coords.x = e.clientX;
+      coords.y = e.clientY;
+    });
+
+    function animateCircles() {
+      let x = coords.x;
+      let y = coords.y;
+      
+      circles.forEach(function (circle, index) {
+        // Positioniere den Kreis so, dass die Mitte immer am Mauszeiger ist
+        circle.style.left = x - 12 + "px";
+        circle.style.top = y - 12 + "px";
+        
+        // Skaliere die Kreise: Der erste Kreis ist am größten, die folgenden kleiner
+        circle.style.transform = "translate(-50%, -50%) scale(" + ((circles.length - index) / circles.length) + ")";
+        
+        circle.x = x;
+        circle.y = y;
+
+        const nextCircle = circles[index + 1] || circles[0];
+        x += (nextCircle.x - x) * 0.3;
+        y += (nextCircle.y - y) * 0.3;
+      });
+     
+      requestAnimationFrame(animateCircles);
+    }
+    
+    animateCircles();
+
+    /* ===== Splash-Effekt bei Mausklick ===== */
+    window.addEventListener("mousedown", function(e) {
+      const splash = document.createElement("div");
+      splash.className = "splash";
+      splash.style.left = e.clientX + "px";
+      splash.style.top = e.clientY + "px";
+      document.body.appendChild(splash);
+      
+      // Entferne das Splash-Element nach Abschluss der Animation (600ms)
+      setTimeout(function() {
+        splash.remove();
+      }, 600);
+    });
+  </script>
+</body>
+</html>

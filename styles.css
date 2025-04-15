@@ -1,0 +1,194 @@
+/* Grundlegende Reset-Regeln */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Body mit Grain-Effekt als Overlay */
+  body {
+    position: relative;
+    background-color: #222222;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  
+  /* Grain-Effekt: Verwende den "asfalt-light"-Pattern von TransparentTextures.
+     Mit position: fixed und Höhe 100% deckt er den gesamten Bereich ab, auch wenn unten mehr Fensterinhalt sichtbar ist. */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/asfalt-light.png');
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  /* Particles.js füllt den gesamten Hintergrund */
+  #particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    top: 0;
+    left: 0;
+  }
+  
+  /* Container für den Hauptinhalt – über dem Grain und Partikel-Canvas positioniert */
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .gradient-text {
+    font-size: 3rem;
+    background: linear-gradient(45deg, #1abc9c, #3498db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  
+  .slogan {
+    font-size: 1.5rem;
+    margin-top: 10px;
+  }
+  
+  /* Layout des Hauptinhalts */
+  .main-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  /* Moderatorbereich */
+  .moderator {
+    flex: 1 1 300px;
+    text-align: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  }
+  
+  .moderator-img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Modernisierte Quizinhalt-Bereich (Textbox) */
+  /* Neuer Hintergrund mit grauem linear-gradient, feiner Border und animiertem Hover-Effekt */
+  .quiz-content {
+    flex: 2 1 500px;
+    background: linear-gradient(135deg, #2c2c2c, #3a3a3a);
+    padding: 25px;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    border: 1px solid #444444;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  .quiz-content:hover {
+    background: linear-gradient(135deg, #343434, #444444);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .question h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Eingabe- und Button-Bereich */
+  .input-section {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  /* Stylische Antwortbuttons mit sanfter Hover-Animation und minimaler Rotation */
+  .answer-btn {
+    padding: 12px 25px;
+    font-size: 1rem;
+    background: linear-gradient(45deg, #1abc9c, #3498db);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    color: #fff;
+  }
+  .answer-btn:hover {
+    transform: scale(1.05) rotate(0.5deg);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
+  }
+  
+  /* Responsives Design */
+  @media (max-width: 768px) {
+    .main-content {
+      flex-direction: column;
+    }
+  }
+  
+  /* ===== Cursor Trail: Kreise ===== */
+  .circle {
+    height: 24px;
+    width: 24px;
+    border-radius: 24px;
+    background-color: black; /* wird per JS überschrieben */
+    position: fixed; 
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 99999999;
+  }
+  
+  /* ===== Splash-Effekt bei Mausklick ===== */
+  .splash {
+    position: fixed;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #1abc9c 0%, #3498db 100%);
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: none;
+    z-index: 100000000;
+    animation: splashEffect 0.6s ease-out forwards;
+  }
+  
+  @keyframes splashEffect {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.7;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(3);
+      opacity: 0;
+    }
+  }
