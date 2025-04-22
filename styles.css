@@ -202,3 +202,24 @@ body::after {
     opacity: 0;
   }
 }
+
+.stt-test {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+#stt-output {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #1a2e4f;
+  color: #fff;
+  resize: none;
+  font-family: inherit;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
