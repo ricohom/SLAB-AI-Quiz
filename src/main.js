@@ -1,33 +1,31 @@
 // ---------- main.js ----------
 import { SpeechService } from "./speech.js";
-import { fetchQuestion, evaluate } from "./quiz.js";
+import { fetchQuestion, evaluateSpeech } from "./quiz.js";
 
 const speech = new SpeechService("de-DE");
 
 /* ---------- DOM ---------- */
-const qText     = document.getElementById("question-text");
-const aWrap     = document.getElementById("answer-buttons");
-const feed      = document.getElementById("feedback-text");
-const btnStart  = document.getElementById("btn-start");
-const btnSTT    = document.getElementById("btn-stt");
+const qText    = document.getElementById("question-text");
+const aWrap    = document.getElementById("answer-buttons");
+const feed     = document.getElementById("feedback-text");
+const btnStart = document.getElementById("btn-start");
+const btnSTT   = document.getElementById("btn-stt");
 
-let currentQuestion = null;          // { question, options[] }
+let currentQuestion = null;
 
-/* ---------- Event‑Listener ---------- */
-btnStart.addEventListener("click", playRound);
-btnSTT  .addEventListener("click", askForAnswer);
-/* Delegation für alle Antwort‑Buttons */
+/* ---------- Listener ---------- */
+btnStart.addEventListener("click", startRound);
+btnSTT  .addEventListener("click", handleSpeech);
 aWrap.addEventListener("click", e => {
-  const btn = e.target.closest("button[data-label]");
-  if (btn) handleButtonAnswer(btn.dataset.label);
+  const b = e.target.closest("button[data-label]");
+  if (b && !b.disabled) handleClick(b);
 });
 
-/* ---------- Spiel‑Ablauf ---------- */
-async function playRound() {
+/* ---------- Runde ---------- */
+async function startRound() {
   btnStart.disabled = true;
   feed.textContent  = "";
-  btnSTT.classList.add("hidden");
-  btnSTT.disabled   = true;
+  hideSTT();
 
   qText.textContent = "Lade Frage …";
   try {
@@ -40,75 +38,85 @@ async function playRound() {
   }
 
   renderQuestion(currentQuestion);
-  await speech.speak(buildSpeech(currentQuestion));   // Moderator liest Frage vor
-
-  btnSTT.classList.remove("hidden");                  // STT für diese Runde aktivieren
-  btnSTT.disabled = false;
+  speech.speak(buildSpeech(currentQuestion));   // nicht blockierend
+  showSTT();
 }
 
 function renderQuestion(q) {
-  qText.textContent = q.question;
-  aWrap.innerHTML   = q.options
-    .map(
-      o =>
-        `<button class="secondary-btn"
-                 data-label="${o.label}"
-                 data-correct="${o.isCorrect}">
-           ${o.label}) ${o.text}
-         </button>`
-    )
+  qText.textContent = q.q;
+  aWrap.innerHTML = ["A", "B", "C", "D"]
+    .map(l => `<button class="secondary-btn" data-label="${l}">${l}) ${q[l]}</button>`)
     .join("");
 }
 
 function buildSpeech(q) {
-  return `${q.question}. Ist es Antwort A: ${q.options[0].text}; ` +
-         `Antwort B: ${q.options[1].text}; Antwort C: ${q.options[2].text}; ` +
-         `oder Antwort D: ${q.options[3].text}?`;
+  return `${q.q}. Ist es Antwort A: ${q.A}; Antwort B: ${q.B}; Antwort C: ${q.C}; oder Antwort D: ${q.D}?`;
 }
 
-/* ---------- Variante A – Sprache ---------- */
-async function askForAnswer() {
-  btnSTT.disabled   = true;
-  feed.textContent  = "Ich höre …";
+/* ---------- Sprache ---------- */
+async function handleSpeech() {
+  hideSTT();
+  feed.textContent = "Ich höre …";
 
   try {
-    const userSpeech = await speech.listen();
-    feed.textContent = `Du hast gesagt: „${userSpeech}”`;
-    const correct    = evaluate(userSpeech, currentQuestion.options);
+    const spoken  = await speech.listen();
+    const correct = evaluateSpeech(spoken, currentQuestion);
 
-    await speech.speak(correct ? "Richtig! Gut gemacht 🎉"
-                               : "Leider falsch.");
-    feed.textContent += correct ? " ✅" : " ❌";
+    markButtons(correct ? null : currentQuestion.r);
+    speech.speak(correct ? "Richtig! Gut gemacht 🎉" : "Leider falsch.");   // non‑blocking
+    feed.textContent = correct ? "✅ Richtig!" : "❌ Falsch!";
   } catch (err) {
     feed.textContent = `Spracherkennung fehlgeschlagen: ${err}`;
   }
-  unlockForNextRound();
+  unlock();
 }
 
-/* ---------- Variante B – Klick ---------- */
-async function handleButtonAnswer(label) {
-  [...aWrap.children].forEach(b => (b.disabled = true));     // Doppelklick blocken
+/* ---------- Klick ---------- */
+async function handleClick(btn) {
+  [...aWrap.children].forEach(b => (b.disabled = true));
 
-  const picked   = currentQuestion.options.find(o => o.label === label);
-  const correct  = picked?.isCorrect;
+  const correct = btn.dataset.label === currentQuestion.r;
+
+  if (correct) {
+    markButtons(null);                    // richtiger Button wird in markButtons grün
+  } else {
+    markButtons(currentQuestion.r, btn);  // grün + rot
+  }
 
   feed.textContent = correct
-    ? `Richtig! ${picked.text}`
-    : `Leider falsch! Die richtige Antwort war ${
-        currentQuestion.options.find(o => o.isCorrect).text
-      }.`;
+    ? "✅ Richtig!"
+    : `❌ Falsch! Richtige Antwort: ${currentQuestion.r}`;
 
-  await speech.speak(correct ? "Richtig! Gut gemacht 🎉"
-                             : "Das war leider falsch.");
-  unlockForNextRound();
+  speech.speak(correct ? "Richtig! Gut gemacht 🎉" : "Das war leider falsch."); // non‑blocking
+  unlock();
 }
 
-/* ---------- Helper ---------- */
-function unlockForNextRound() {
+/* ---------- UI‑Hilfen ---------- */
+function markButtons(correctLabel = null, wrongBtn = null) {
+  if (wrongBtn) wrongBtn.classList.add("wrong");
+  if (correctLabel) {
+    const rightBtn = aWrap.querySelector(`button[data-label="${correctLabel}"]`);
+    if (rightBtn) rightBtn.classList.add("correct");
+  } else {
+    // falls correctLabel null, wurde bereits der richtige Button geklickt
+    const clicked = aWrap.querySelector(`button[data-label]:not(.wrong)`);
+    if (clicked) clicked.classList.add("correct");
+  }
+}
+
+function hideSTT() {
+  btnSTT.classList.add("hidden");
+  btnSTT.setAttribute("disabled", "");
+}
+function showSTT() {
+  btnSTT.classList.remove("hidden");
+  btnSTT.removeAttribute("disabled");
+}
+
+function unlock() {
   btnStart.disabled = false;
   btnStart.textContent = "Neue Frage";
-  btnSTT.classList.add("hidden");
-  btnSTT.disabled = true;
+  hideSTT();
 }
 
-export {};          // kennzeichnet die Datei als ES‑Modul
+export {};

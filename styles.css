@@ -223,3 +223,11 @@ body::after {
   font-family: inherit;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
 }
+
+
+/* ===== Farbfeedback für Antworten ===== */
+.correct { background:#2ecc71 !important; color:#fff; }
+.wrong   { background:#e74c3c !important; color:#fff; }
+
+/* ===== Utility ===== */
+.hidden { display:none; }
