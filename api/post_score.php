@@ -1,6 +1,8 @@
 <?php
 require 'db.php';
-$req=json_decode(file_get_contents('php://input'),true);
-$stmt=$pdo->prepare("UPDATE users SET points=? WHERE id=?");
-$stmt->execute([$req['points'],$req['id']]);
+$d=json_decode(file_get_contents('php://input'),true);
+$delta = (int)$d['delta'];
+$id    = (int)$d['id'];
+$pdo->prepare("UPDATE users SET points = GREATEST(points + ?, 0) WHERE id = ?")
+    ->execute([$delta,$id]);
 echo json_encode(["ok"=>true]);

@@ -5,38 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quiz-Master</title>
 
-  <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- Particles-Hintergrund -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
 </head>
 <body>
-  <!-- Animierter Hintergrund -->
   <div id="particles-js"></div>
 
-  <!-- Fixierter Logout-Button (start hidden) -->
+  <!-- fixierter Logout -->
   <button id="btnLogout" class="btn-logout-fixed hidden">Logout</button>
 
-  <!-- Haupt-App-Container -->
+  <!-- SPA-Container -->
   <div class="container" id="app"></div>
 
-  <!-- Login / Signup-Dialog -->
+  <!-- Login / Signup -->
   <dialog id="authDialog">
     <h3 id="authTitle">Login</h3>
-
-    <input id="authUser" type="text" placeholder="Benutzername" autocomplete="off">
-    <input id="authPass" type="password" placeholder="Passwort">
-
+    <input id="authUser"  placeholder="Benutzername" autocomplete="off">
+    <input id="authPass"  type="password" placeholder="Passwort">
     <p id="authError" class="error"></p>
-
-    <button id="authOK"  class="btn primary">OK</button>
-    <button id="authSwap" class="btn">
-      oder <span id="swapText">Registrieren</span>
-    </button>
+    <button id="authOK"   class="btn primary">OK</button>
+    <button id="authSwap" class="btn">oder <span id="swapText">Registrieren</span></button>
   </dialog>
 
-  <!-- Frontend-Logik -->
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
