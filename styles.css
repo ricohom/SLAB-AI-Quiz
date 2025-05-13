@@ -1,233 +1,69 @@
-/* Grundlegende Reset-Regeln */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ===== Reset ===== */
+*{margin:0;padding:0;box-sizing:border-box;}
 
-/* Body mit dunklem Navy-Blau als Hintergrund und Cube-Overlay */
-body {
-  position: relative;
-  background-color: #0c2345; /* Tiefes Navy-Blau */
-  color: #ffffff;
-  font-family: Arial, Helvetica, sans-serif;
-  line-height: 1.6;
-  overflow-x: hidden;
+/* ===== Grundlayout ===== */
+body{
+  background:#0c2345;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;overflow-x:hidden;position:relative;
 }
+body::after{
+  content:"";position:fixed;inset:0;
+  background:url('https://www.transparenttextures.com/patterns/cubes.png');
+  opacity:.2;pointer-events:none;z-index:0;
+}
+#particles-js{position:fixed;inset:0;z-index:-1;}
 
-/* Hintergrund-Overlay: Cube-Textur über den gesamten sichtbaren Bereich;
-   Die Opazität wurde leicht auf 0.2 reduziert */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('https://www.transparenttextures.com/patterns/cubes.png');
-  opacity: 0.2;
-  pointer-events: none;
-  z-index: 0;
-}
+.container,#app{z-index:2;width:92vw;max-width:500px;text-align:center;padding:20px;}
 
-/* Particles.js: Füllt den gesamten Hintergrund */
-#particles-js {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  top: 0;
-  left: 0;
-}
+/* ===== Typografie ===== */
+h2{font-size:1.8rem;margin:12px 0;}h3{font-size:1.4rem;margin:16px 0;}
+.slogan{font-size:1.1rem;margin-top:8px}
 
-/* Container für den Hauptinhalt – über dem Overlay */
-.container {
-  position: relative;
-  z-index: 2;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
+/* ===== Buttons ===== */
+button{cursor:pointer;border:none;border-radius:8px;padding:12px 20px;font-size:1rem;transition:.3s}
+.primary{background:linear-gradient(45deg,#FF8C00,#FFA500);color:#fff;}
+.primary:hover{transform:scale(1.05);box-shadow:0 0 8px rgba(255,140,0,.8);}
+.btn{width:100%;margin:8px 0;background:#1a3a6b;color:#fff;}
+.btn:hover{background:#22508a;transform:scale(1.03);}
+.correct{background:#2ecc71!important;color:#fff;}
+.wrong  {background:#e74c3c!important;color:#fff;}
 
-/* Header */
-.header {
-  text-align: center;
-  margin-bottom: 40px;
-}
+/* ===== Spiel-Layout ===== */
+.scoreboard{font-weight:bold;margin-bottom:8px}
+.scoreboard #pts{font-size:1.3rem;}
+#answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
+#feedback{min-height:1.2rem;margin:8px 0;font-weight:bold;}
 
-/* Überschrift: Heller, leuchtender Orangener Gradient (ohne Glow-Effekt) */
-.gradient-text {
-  font-size: 3rem;
-  background: linear-gradient(45deg, #FF8C00, #FFA500);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  /* Kein zusätzlicher Textshadow – rein der saubere Gradient-Style */
-}
+/* ===== Rank-Badges ===== */
+.rank{display:inline-flex;align-items:center;gap:4px}
+.rank img{width:20px;height:20px}
+.rank-Bronze{color:#cd7f32}.rank-Silver{color:#c0c0c0}.rank-Gold{color:#ffd700}
+.rank-Platin{color:#4bcffa}.rank-Diamond{color:#74f9ff}.rank-Master{color:#e642f5}
 
-.slogan {
-  font-size: 1.5rem;
-  margin-top: 10px;
-  color: #ffffff;
+/* ===== Auth-Dialog ===== */
+dialog{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:320px;max-width:90vw;
+  background:rgba(19,40,79,.92);
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;padding:25px 20px;
+  box-shadow:0 6px 20px rgba(0,0,0,.7);color:#fff;text-align:center;
 }
+dialog::backdrop{background:rgba(0,0,0,.25);}
+dialog input{width:100%;padding:11px;margin:6px 0 10px;border:none;border-radius:8px;background:#1a2e4f;color:#fff;}
+dialog .btn{margin:6px 0;}
+.error{color:#e74c3c;font-size:.9rem;margin-top:4px}
 
-/* Layout des Hauptinhalts */
-.main-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
+/* ===== Logout-Button fixiert ===== */
+.btn-logout-fixed{
+  position:fixed;top:20px;right:20px;z-index:5;
+  background:#e74c3c;color:#fff;padding:8px 14px;font-size:.9rem;border:none;border-radius:8px;cursor:pointer;transition:.3s;
 }
-
-/* Moderatorbereich */
-.moderator {
-  flex: 1 1 300px;
-  text-align: center;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-}
-
-.moderator-img {
-  max-width: 100%;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Quizinhalt-Bereich (Textbox) */
-.quiz-content {
-  flex: 2 1 500px;
-  background: linear-gradient(135deg, #13284f, #1a3a6b);
-  padding: 25px;
-  border-radius: 6px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-.quiz-content:hover {
-  background: linear-gradient(135deg, #1a3a6b, #1e437b);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
-}
-
-/* Frage-Text: Kräftiger, leuchtender Orangeton */
-.question h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  color: #FF8C00;
-}
-
-/* Feedback-Bereich */
-.feedback p {
-  color: #ffffff;
-}
-
-/* Eingabe- und Button-Bereich */
-.input-section {
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-/* Antwortbuttons: Leuchtender, kräftiger Orangener Gradient */
-.answer-btn {
-  padding: 12px 25px;
-  font-size: 1rem;
-  background: linear-gradient(45deg, #FF8C00, #FFA500);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  /* Dezente Schatten für taktile Optik, aber kein übertriebener Glow */
-  box-shadow: 0 0 4px rgba(255, 140, 0, 0.5);
-  color: #ffffff;
-}
-.answer-btn:hover {
-  transform: scale(1.05) rotate(0.5deg);
-  box-shadow: 0 0 8px rgba(255, 140, 0, 0.8);
-}
-
-/* Footer */
-.footer {
-  text-align: center;
-  margin-top: 40px;
-  padding: 20px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 0.9rem;
-  color: #ffffff;
-}
-
-/* Responsives Design */
-@media (max-width: 768px) {
-  .main-content {
-    flex-direction: column;
-  }
-}
-
-/* ===== Cursor Trail: Kreise (in leuchtendem Orange) ===== */
-.circle {
-  height: 24px;
-  width: 24px;
-  border-radius: 24px;
-  background-color: #FF8C00;
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 99999999;
-}
-
-/* ===== Splash-Effekt bei Mausklick (leuchtender Orangener Gradient) ===== */
-.splash {
-  position: fixed;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #FF8C00 0%, #FFA500 100%);
-  transform: translate(-50%, -50%) scale(1);
-  pointer-events: none;
-  z-index: 100000000;
-  animation: splashEffect 0.6s ease-out forwards;
-}
-
-@keyframes splashEffect {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.7;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(3);
-    opacity: 0;
-  }
-}
-
-.stt-test {
-  width: 100%;
-  max-width: 600px;
-  margin-top: 20px;
-  text-align: center;
-}
-
-#stt-output {
-  width: 100%;
-  margin-top: 12px;
-  padding: 12px;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: none;
-  background: #1a2e4f;
-  color: #fff;
-  resize: none;
-  font-family: inherit;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
-}
-
-
-/* ===== Farbfeedback für Antworten ===== */
-.correct { background:#2ecc71 !important; color:#fff; }
-.wrong   { background:#e74c3c !important; color:#fff; }
+.btn-logout-fixed:hover{background:#ff5959;}
 
 /* ===== Utility ===== */
-.hidden { display:none; }
+.hidden{display:none;}

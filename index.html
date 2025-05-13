@@ -3,45 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TV‑Quizshow</title>
+  <title>Quiz-Master</title>
 
-  <!-- Optional: Particles‑Deko -->
-  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
+  <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Particles-Hintergrund -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
 </head>
 <body>
+  <!-- Animierter Hintergrund -->
   <div id="particles-js"></div>
 
-  <div class="container">
-    <header class="header">
-      <h1 class="gradient-text">Willkommen zur TV‑Quizshow</h1>
-      <p class="slogan">Teste dein Wissen live &amp; interaktiv — nur mit deiner Stimme!</p>
-    </header>
+  <!-- Fixierter Logout-Button (start hidden) -->
+  <button id="btnLogout" class="btn-logout-fixed hidden">Logout</button>
 
-    <main class="main-content">
-      <section class="moderator">
-        <img src="assets/mod.png" alt="Moderator" class="moderator-img">
-      </section>
+  <!-- Haupt-App-Container -->
+  <div class="container" id="app"></div>
 
-      <section class="quiz-content">
-        <div class="question"><h2 id="question-text">Klicke auf „Spiel starten“</h2></div>
+  <!-- Login / Signup-Dialog -->
+  <dialog id="authDialog">
+    <h3 id="authTitle">Login</h3>
 
-        <div class="answers" id="answer-buttons"></div>
+    <input id="authUser" type="text" placeholder="Benutzername" autocomplete="off">
+    <input id="authPass" type="password" placeholder="Passwort">
 
-        <div class="feedback"><p id="feedback-text">… hier erscheint dein Ergebnis …</p></div>
+    <p id="authError" class="error"></p>
 
-        <div class="controls">
-          <button id="btn-start" class="primary-btn">🎬 Spiel starten</button>
-          <button id="btn-stt"   class="secondary-btn hidden">🎙️ Antwort sprechen</button>
-        </div>
-      </section>
-    </main>
+    <button id="authOK"  class="btn primary">OK</button>
+    <button id="authSwap" class="btn">
+      oder <span id="swapText">Registrieren</span>
+    </button>
+  </dialog>
 
-    <footer class="footer">
-      <p>&copy; 2025 TV‑Quizshow • Hochschulprojekt</p>
-    </footer>
-  </div>
-
+  <!-- Frontend-Logik -->
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

@@ -1,122 +1,202 @@
-// ---------- main.js ----------
-import { SpeechService } from "./speech.js";
-import { fetchQuestion, evaluateSpeech } from "./quiz.js";
+import { fetchQuestion } from "./question.js";
+import { loadHighscore, saveHighscore } from "./storage.js";
 
-const speech = new SpeechService("de-DE");
+/* ------- Config ------- */
+const DIFF = {
+  easy:   { plus:10, minus:5 },
+  normal: { plus:20, minus:10 },
+  hard:   { plus:40, minus:20 }
+};
+const RANKS = [
+  { n:"Bronze",  min:0,   svg:"bronze"  },
+  { n:"Silver",  min:200, svg:"silver"  },
+  { n:"Gold",    min:400, svg:"gold"    },
+  { n:"Platin",  min:700, svg:"platin"  },
+  { n:"Diamond", min:1000,svg:"diamond" },
+  { n:"Master",  min:1300,svg:"master"  }
+];
 
-/* ---------- DOM ---------- */
-const qText    = document.getElementById("question-text");
-const aWrap    = document.getElementById("answer-buttons");
-const feed     = document.getElementById("feedback-text");
-const btnStart = document.getElementById("btn-start");
-const btnSTT   = document.getElementById("btn-stt");
+/* ------- State ------- */
+const app       = document.getElementById("app");
+const btnLogout = document.getElementById("btnLogout");
+const dlg       = document.getElementById("authDialog");
+const userF     = document.getElementById("authUser");
+const passF     = document.getElementById("authPass");
+const errF      = document.getElementById("authError");
+const swapBtn   = document.getElementById("authSwap");
+let isSignup=false;
 
-let currentQuestion = null;
+/* --- Enter-Taste triggert „OK“ --- */
+[userF, passF].forEach(inp => {
+    inp.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("authOK").click();
+      }
+    });
+  });
 
-/* ---------- Listener ---------- */
-btnStart.addEventListener("click", startRound);
-btnSTT  .addEventListener("click", handleSpeech);
-aWrap.addEventListener("click", e => {
-  const b = e.target.closest("button[data-label]");
-  if (b && !b.disabled) handleClick(b);
+let difficulty = "normal";
+let qCount=0, points=0;
+let uid=null, username="";
+
+/* ------- Auth -------- */
+swapBtn.onclick = () => {
+  isSignup=!isSignup;
+  document.getElementById("authTitle").textContent = isSignup?"Registrieren":"Login";
+  document.getElementById("swapText").textContent  = isSignup?"Einloggen":"Registrieren";
+  errF.textContent="";
+};
+
+document.getElementById("authOK").onclick = async () => {
+  errF.textContent="";
+  const u=userF.value.trim(), p=passF.value.trim();
+  if(!u||!p){errF.textContent="Bitte ausfüllen";return;}
+
+  const url=isSignup?"api/signup.php":"api/login.php";
+  const res=await fetch(url,{method:"POST",body:JSON.stringify({username:u,password:p})});
+  const data=await res.json();
+  if(!res.ok){errF.textContent=data.error||"Fehler";return;}
+
+  if(isSignup){
+    uid = await quickLogin(u,p).then(d=>d.id);
+  }else{
+    uid=data.id; points=data.points;
+  }
+  username=u;
+  dlg.close();
+  btnLogout.classList.remove("hidden");
+  tplMenu();
+};
+
+async function quickLogin(u,p){
+  const r=await fetch("api/login.php",{method:"POST",body:JSON.stringify({username:u,password:p})});
+  return r.json();
+}
+
+btnLogout.onclick = logout;
+function logout(){
+  uid=null; username=""; points=0;
+  sessionStorage.clear();
+  btnLogout.classList.add("hidden");
+  userF.value=passF.value="";
+  isSignup=false;
+  document.getElementById("authTitle").textContent="Login";
+  document.getElementById("swapText").textContent="Registrieren";
+  errF.textContent="";
+  dlg.showModal();
+}
+
+/* ------- Templates ------- */
+function tplMenu(){
+  app.innerHTML=`
+    <h2>🎓 Quiz-Master</h2>
+    <p>Willkommen, <strong>${username}</strong>!</p>
+
+    <button class="btn primary" data-diff="easy">Einfach</button>
+    <button class="btn primary" data-diff="normal">Mittel</button>
+    <button class="btn primary" data-diff="hard">Schwer</button>
+
+    <p>🏆 Highscore: ${loadHighscore()} P</p>
+    <button class="btn" id="btnBoard">Leaderboard</button>`;
+
+  [...app.querySelectorAll("[data-diff]")]
+    .forEach(b => b.onclick = () => startGame(b.dataset.diff));
+
+  document.getElementById("btnBoard").onclick = showBoard;
+}
+
+function tplGame(qObj){
+  const {q,A,B,C,D}=qObj;
+  app.innerHTML=`
+    <div class="scoreboard">
+      <span id="pts">${points}</span> P · <span id="rank">${rankBadge(points)}</span>
+    </div>
+    <p>${qCount}/10 · Schwierigkeit: ${difficulty}</p>
+    <h3>${q}</h3>
+    <div id="answers">
+      <button class="btn" data-label="A">A) ${A}</button>
+      <button class="btn" data-label="B">B) ${B}</button>
+      <button class="btn" data-label="C">C) ${C}</button>
+      <button class="btn" data-label="D">D) ${D}</button>
+    </div>
+    <p id="feedback"></p>`;
+
+  [...app.querySelectorAll("#answers button")]
+    .forEach(b => b.onclick = () => evaluate(b,qObj));
+}
+
+function tplEnd(){
+  saveHighscore(points);
+  fetch("api/post_score.php",{method:"POST",body:JSON.stringify({id:uid,points})});
+
+  app.innerHTML=`
+    <h2>Ergebnis</h2>
+    <p>Du hast <strong>${points} P</strong> erreicht.</p>
+    <p>Rank: ${rankBadge(points)}</p>
+    <p>Highscore: ${loadHighscore()} P</p>
+    <button class="btn primary" id="again">Nochmal spielen</button>
+    <button class="btn" id="menu">Zurück zum Menü</button>`;
+
+  document.getElementById("again").onclick = () => startGame(difficulty);
+  document.getElementById("menu").onclick  = tplMenu;
+}
+
+/* ------- Game Flow ------- */
+function startGame(diff){
+  difficulty=diff; qCount=0; points=0; nextQuestion();
+}
+async function nextQuestion(){
+  if(qCount>=10){tplEnd();return;}
+  qCount++;
+  const q=await fetchQuestion();
+  tplGame(q);
+}
+function evaluate(btn,q){
+  [...btn.parentNode.children].forEach(b=>b.disabled=true);
+  const {plus,minus}=DIFF[difficulty];
+  const correct = btn.dataset.label===q.r;
+  points += correct ? plus : -minus;
+  if(points<0) points=0;
+
+  if(correct){btn.classList.add("correct");}
+  else{
+    btn.classList.add("wrong");
+    app.querySelector(`[data-label="${q.r}"]`)?.classList.add("correct");
+  }
+  document.getElementById("pts").textContent = points;
+  document.getElementById("rank").innerHTML  = rankBadge(points);
+  document.getElementById("feedback").textContent = correct
+     ? `✅ +${plus} P`
+     : `❌ -${minus} P (richtig: ${q.r})`;
+
+  setTimeout(nextQuestion,1200);
+}
+
+/* ------- Leaderboard ------- */
+async function showBoard(){
+  const res=await fetch("api/leaderboard.php");
+  const data=await res.json();
+  alert("Leaderboard:\n\n"+data.map((r,i)=>`${i+1}. ${r.username} – ${r.points} P`).join("\n"));
+}
+
+/* ------- Helper ------- */
+function rankBadge(pts){
+  const r=RANKS.slice().reverse().find(r=>pts>=r.min)||RANKS[0];
+  return `<span class="rank rank-${r.n}"><img src="assets/${r.svg}.svg" alt="">${r.n}</span>`;
+}
+
+/* ------- Init ------- */
+dlg.showModal();
+
+/* ------- Particles Hintergrund ------- */
+particlesJS("particles-js",{
+  particles:{number:{value:20,density:{enable:true,value_area:800}},
+    shape:{type:"polygon",polygon:{nb_sides:6}},color:{value:"#ffffff"},
+    opacity:{value:0.5,random:true},size:{value:5,random:true},
+    move:{enable:true,speed:3,direction:"none",random:true}},
+  interactivity:{detect_on:"window",
+    events:{onhover:{enable:true,mode:"repulse"},onclick:{enable:false}},
+    modes:{repulse:{distance:150,duration:0.4}}},
+  retina_detect:true
 });
-
-/* ---------- Runde ---------- */
-async function startRound() {
-  btnStart.disabled = true;
-  feed.textContent  = "";
-  hideSTT();
-
-  qText.textContent = "Lade Frage …";
-  try {
-    currentQuestion = await fetchQuestion();
-  } catch (err) {
-    qText.textContent = "Fehler beim Laden der Frage.";
-    feed.textContent  = err.message || err;
-    btnStart.disabled = false;
-    return;
-  }
-
-  renderQuestion(currentQuestion);
-  speech.speak(buildSpeech(currentQuestion));   // nicht blockierend
-  showSTT();
-}
-
-function renderQuestion(q) {
-  qText.textContent = q.q;
-  aWrap.innerHTML = ["A", "B", "C", "D"]
-    .map(l => `<button class="secondary-btn" data-label="${l}">${l}) ${q[l]}</button>`)
-    .join("");
-}
-
-function buildSpeech(q) {
-  return `${q.q}. Ist es Antwort A: ${q.A}; Antwort B: ${q.B}; Antwort C: ${q.C}; oder Antwort D: ${q.D}?`;
-}
-
-/* ---------- Sprache ---------- */
-async function handleSpeech() {
-  hideSTT();
-  feed.textContent = "Ich höre …";
-
-  try {
-    const spoken  = await speech.listen();
-    const correct = evaluateSpeech(spoken, currentQuestion);
-
-    markButtons(correct ? null : currentQuestion.r);
-    speech.speak(correct ? "Richtig! Gut gemacht 🎉" : "Leider falsch.");   // non‑blocking
-    feed.textContent = correct ? "✅ Richtig!" : "❌ Falsch!";
-  } catch (err) {
-    feed.textContent = `Spracherkennung fehlgeschlagen: ${err}`;
-  }
-  unlock();
-}
-
-/* ---------- Klick ---------- */
-async function handleClick(btn) {
-  [...aWrap.children].forEach(b => (b.disabled = true));
-
-  const correct = btn.dataset.label === currentQuestion.r;
-
-  if (correct) {
-    markButtons(null);                    // richtiger Button wird in markButtons grün
-  } else {
-    markButtons(currentQuestion.r, btn);  // grün + rot
-  }
-
-  feed.textContent = correct
-    ? "✅ Richtig!"
-    : `❌ Falsch! Richtige Antwort: ${currentQuestion.r}`;
-
-  speech.speak(correct ? "Richtig! Gut gemacht 🎉" : "Das war leider falsch."); // non‑blocking
-  unlock();
-}
-
-/* ---------- UI‑Hilfen ---------- */
-function markButtons(correctLabel = null, wrongBtn = null) {
-  if (wrongBtn) wrongBtn.classList.add("wrong");
-  if (correctLabel) {
-    const rightBtn = aWrap.querySelector(`button[data-label="${correctLabel}"]`);
-    if (rightBtn) rightBtn.classList.add("correct");
-  } else {
-    // falls correctLabel null, wurde bereits der richtige Button geklickt
-    const clicked = aWrap.querySelector(`button[data-label]:not(.wrong)`);
-    if (clicked) clicked.classList.add("correct");
-  }
-}
-
-function hideSTT() {
-  btnSTT.classList.add("hidden");
-  btnSTT.setAttribute("disabled", "");
-}
-function showSTT() {
-  btnSTT.classList.remove("hidden");
-  btnSTT.removeAttribute("disabled");
-}
-
-function unlock() {
-  btnStart.disabled = false;
-  btnStart.textContent = "Neue Frage";
-  hideSTT();
-}
-
-export {};
