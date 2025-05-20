@@ -164,7 +164,7 @@ function showRankList(){
 
 /* ===== Spielablauf ===== */
 function startGame(diff){difficulty=diff;qCount=0;runPoints=0;nextQuestion();}
-async function nextQuestion(){qCount>=10?showEnd():showQuestion(await fetchQuestion());}
+async function nextQuestion(){qCount>=10?showEnd():showQuestion(await fetchQuestion(difficulty));}
 
 function showQuestion(q){
   const {q:Q,A,B,C,D}=q;
