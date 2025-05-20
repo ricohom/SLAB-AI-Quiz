@@ -163,3 +163,43 @@ dialog .btn{ margin:6px 0; }
 /* ===== Utility ===== */
 .hidden{ display:none; }
 
+/* +++ Home-Menü Buttons nebeneinander +++ */
+.home-buttons{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin:20px 0;
+}
+
+/* +++ Profil-Seite Platzhalter +++ */
+.profile-box{
+  background:rgba(19,40,79,.9);
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.6);
+}
+
+/* +++ Abbruch Penalty Button +++ */
+.btn.abort{
+  background:#a32828;
+}
+.btn.abort:hover{
+  background:#c0392b;
+}
+
+/* ===== Abbrechen-Button (oben links, wie Logout) ===== */
+.btn-abort-fixed{
+  position:fixed;
+  top:20px;
+  left:20px;
+  z-index:5;
+  background:#e74c3c;       /* gleicher Rotton wie Logout */
+  color:#fff;
+  padding:8px 18px;
+  font-size:.9rem;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  transition:.3s;
+}
+.btn-abort-fixed:hover{background:#ff5959;}

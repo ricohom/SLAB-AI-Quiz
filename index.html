@@ -11,22 +11,26 @@
 <body>
   <div id="particles-js"></div>
 
-  <!-- fixierter Logout -->
   <button id="btnLogout" class="btn-logout-fixed hidden">Logout</button>
 
-  <!-- SPA-Container -->
   <div class="container" id="app"></div>
 
-  <!-- Login / Signup -->
+  <!-- Login-/Signup-Dialog -->
   <dialog id="authDialog">
     <h3 id="authTitle">Login</h3>
-    <input id="authUser"  placeholder="Benutzername" autocomplete="off">
-    <input id="authPass"  type="password" placeholder="Passwort">
+
+    <input id="authUser" placeholder="Benutzername" autocomplete="off">
+    <input id="authPass" type="password" placeholder="Passwort">
+
     <p id="authError" class="error"></p>
-    <button id="authOK"   class="btn primary">OK</button>
-    <button id="authSwap" class="btn">oder <span id="swapText">Registrieren</span></button>
+
+    <button id="authOK"  class="btn primary">OK</button>
+    <button id="authSwap" class="btn">
+      oder <span id="swapText">Registrieren</span>
+    </button>
   </dialog>
 
+  <!-- Kern-JS -->
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
