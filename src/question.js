@@ -22,7 +22,7 @@ export async function fetchQuestion() {
       },
       body:JSON.stringify({model:MODEL,temperature:1,messages:[
         {role:"system",content:sys},
-        {role:"user",content:"Frag mich etwas Allgemeinwissen!"}
+        {role:"user",content:"Frag mich etwas Allgemeinwissen! Versuche auch Fragen zu stellen die nicht in jeder Quizshow vorkommen."}
       ]})
     });
     const data = await res.json();

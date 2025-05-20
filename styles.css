@@ -203,3 +203,44 @@ dialog .btn{ margin:6px 0; }
   transition:.3s;
 }
 .btn-abort-fixed:hover{background:#ff5959;}
+
+/* ===== XP-Bar im Profil ===== */
+.xp-bar{
+  height:24px;
+  background:#26385f;
+  border-radius:12px;
+  overflow:hidden;
+  margin:10px 0 4px;
+}
+.xp-bar .fill{
+  height:100%;
+  background:linear-gradient(90deg,#ffa500,#ff7d00);
+  border-radius:12px 0 0 12px;
+}
+.xp-labels{
+  display:flex;
+  justify-content:space-between;
+  font-size:.8rem;
+  color:#bbb;
+}
+
+/* ===== Rank-Liste im Profil ===== */
+.rank-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+  font-size:.95rem;
+}
+.rank-table th,
+.rank-table td{
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+.rank-table tr.current{
+  background:rgba(255,140,0,.15);        /* aktueller Rang farbig hervorheben */
+}
+.rank-table td img{
+  width:40px;
+  height:40px;
+}
+
