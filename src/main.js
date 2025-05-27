@@ -102,13 +102,32 @@ function showDifficulty(){
 
 /* ===== Leaderboard ===== */
 async function showLeaderboard(){
-  const rows=await fetch("api/leaderboard.php").then(r=>r.json());
-  app.innerHTML=`
+  const rows = await fetch("api/leaderboard.php").then(r=>r.json());
+
+  app.innerHTML = `
     <h2>🏆 Leaderboard</h2>
     <button class="btn" id="backBtn">← Zurück</button>
-    <table class="board"><thead><tr><th>#</th><th>Spieler</th><th class="rank-col">Rang</th><th>Punkte</th></tr></thead>
-    <tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.username}</td><td class="rank-col">${rankBadge(r.points)}</td><td>${r.points}</td></tr>`).join("")}</tbody></table>`;
-  backBtn.onclick=showHome;
+    <table class="board">
+      <thead>
+        <tr>
+          <th>#</th><th>Spieler</th><th class="rank-col">Rang</th>
+          <th>Punkte</th><th>Trefferquote</th><th>Spiele</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map((r,i)=>`
+          <tr>
+            <td>${i+1}</td>
+            <td>${r.username}</td>
+            <td class="rank-col">${rankBadge(r.points)}</td>
+            <td>${r.points}</td>
+            <td>${r.accuracy} %</td>
+            <td>${r.games_played}</td>
+          </tr>`).join("")}
+      </tbody>
+    </table>`;
+
+  document.getElementById("backBtn").onclick = showHome;
 }
 
 /* ===== Profil (ohne Rank-Liste) ===== */
@@ -219,6 +238,13 @@ function showEnd(){
     <p>Run-Punkte: <strong>${runPoints} P</strong></p>
     <button class="btn primary" id="againBtn">Noch mal</button>
     <button class="btn"          id="homeBtn">Menü</button>`;
+
+  // Run-Zählung melden
+  fetch("api/record_run.php", {
+    method: "POST",
+    body: JSON.stringify({ id: uid })
+  });
+
   againBtn.onclick=()=>startGame(difficulty);
   homeBtn.onclick =showHome;
 }
