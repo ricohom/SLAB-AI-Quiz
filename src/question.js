@@ -27,7 +27,7 @@ Antwortformat NUR JSON {"q":"…","A":"…","B":"…","C":"…","D":"…","r":"B
   hard: {
     temp : 0.9,
     sys  : `Du bist Quizmaster einer **Profi-Runde**.  • Stelle schwierige, aber faire Fragen auf hohem Niveau.  
-    • Themen mischen: Astrophysik, Jazz-Geschichte, Philosophie, Weltwirtschaft, Molekular­biologie, höherer Sport­statistik, Kunst­geschichte.  • 
+    • Themen mischen: Astrophysik, Musik-Geschichte, Philosophie, Weltwirtschaft, Molekular­biologie, höherer Sport­statistik, Kunst­geschichte.  • 
     Keine triviale Google-Antwort.  • 
     Antwortformat NUR JSON {"q":"…","A":"…","B":"…","C":"…","D":"…","r":"B"}.`,
     user : "Gib mir eine HARD-Frage!"
