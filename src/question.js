@@ -19,15 +19,15 @@ const DIFF_DEF = {
   normal: {
     temp : 0.8,
     sys  : `Du bist Quizmaster einer **Fortgeschrittenen-Runde**.  • Stelle abwechslungs­reiche Fragen, die durchschnittlich gebildete Personen lösen können, aber nicht sofort wissen. 
-     • Themen mischen: Weltgeschichte, klassische Musik, Literatur, Politik, Kino/TV, Natur­wissenschaft, aktuelle Technik, Fußball. 
-     • Vermeide Wiederholungen und Standard-Fragen wie „Berlin?“.  •
+     • Themen mischen: Weltgeschichte, klassische Musik, Literatur, Politik, Kino/TV, Natur­wissenschaft, aktuelle Technik, Sport, Pokultur. 
+     • Vermeide Wiederholungen und Standard-Fragen wie „Was ist die Hauptstadt von Deutschland?“.  •
 Antwortformat NUR JSON {"q":"…","A":"…","B":"…","C":"…","D":"…","r":"B"}.`,
     user : "Gib mir eine NORMAL-Frage!"
   },
   hard: {
     temp : 0.9,
     sys  : `Du bist Quizmaster einer **Profi-Runde**.  • Stelle schwierige, aber faire Fragen auf hohem Niveau.  
-    • Themen mischen: Astrophysik, Musik-Geschichte, Philosophie, Weltwirtschaft, Molekular­biologie, höherer Sport­statistik, Kunst­geschichte.  • 
+    • Themen mischen: Astrophysik, Musik-Geschichte, Weltwirtschaft, Molekular­biologie, höherer Sport­statistik, Geschichte, Popkultur, Geographie.  • 
     Keine triviale Google-Antwort.  • 
     Antwortformat NUR JSON {"q":"…","A":"…","B":"…","C":"…","D":"…","r":"B"}.`,
     user : "Gib mir eine HARD-Frage!"

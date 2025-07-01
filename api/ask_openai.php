@@ -1,7 +1,7 @@
 <?php
 /* --------- GEHEIMDATEN ----------------------------------------- */
 $openai_key = "KEY";   // Project-Key
-$project_id = "ID";                                  // Project-ID
+$project_id = "KEY";                                  // Project-ID
 /* ----------------------------------------------------------------*/
 
 /* ------------- Payload aus dem Frontend ------------------------ */
